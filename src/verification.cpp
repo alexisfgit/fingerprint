@@ -5,10 +5,11 @@
 #include <Adafruit_Fingerprint.h>
 #include <U8x8lib.h> //choix de cette librairie car prend peu de RAM sur le Uno
 
-SoftwareSerial mySerial(2, 3); //utilisation liaison série sur l'Arduino
 
+SoftwareSerial mySerial(2, 3); //utilisation liaison série sur l'Arduino
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial); //Instancie le capteur avec un flux pour Serial
-U8X8_SSD1306_128X64_NONAME_SW_I2C u8x8(/* clock=*/ A5, /* data=*/ A4, /* reset=*/ U8X8_PIN_NONE); // OLED sans broche reset
+U8X8_SSD1306_128X64_NONAME_SW_I2C u8x8(/* clock=*/ A5, /* data=*/ A4, /* reset=*/ U8X8_PIN_NONE); //OLED sans broche reset
+
 
 void setup()
 {
@@ -48,6 +49,7 @@ void setup()
     Serial.println("En attente d'un doigt valide...");
   }
 }
+
 
 //Fonction permettant la prise d'empreinte et de la comparer à la base de donnée du capteur
 uint8_t getFingerprintID() {
@@ -115,8 +117,9 @@ uint8_t getFingerprintID() {
   return finger.fingerID; //Retourne le numéro de l'empreinte trouvée
 }
 
+
 void loop()
 {
-  getFingerprintID();
+  getFingerprintID(); //appelle la fonction de vérification d'empreinte
   delay(50);
 }

@@ -1,13 +1,13 @@
-//programme permettant d'enregistrer ses empreintes
+//programme permettant d'enregistrer des empreintes
 
 #include <Arduino.h>
 #include <Adafruit_Fingerprint.h>
 
+
 SoftwareSerial mySerial(2, 3); //utilisation liaison série sur l'Arduino
-
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial); //Instancie le capteur avec un flux pour Serial
-
 uint8_t id;
+
 
 void setup()
 {
@@ -36,6 +36,7 @@ void setup()
   Serial.print(F("Baud rate: ")); Serial.println(finger.baud_rate);             |*/
 }
 
+
 //la fonction attend que des données soient disponibles sur le port série, puis lit un nombre entier depuis ce port dès qu'il est disponible, et le retourne. La fonction ne retourne que lorsque le nombre lu est différent de zéro.
 uint8_t readnumber(void) {
   uint8_t num = 0;
@@ -47,24 +48,12 @@ uint8_t readnumber(void) {
   return num;
 }
 
-void loop()
-{
-  Serial.println("Prêt à enregistrer une empreinte");
-  Serial.println("Veuillez saisir le numéro d'identification (de 1 à 127) sous lequel vous souhaitez enregistrer ce doigt...");
-  id = readnumber(); //id prend la valeur saisie dans le flux serial
-  if (id == 0) { //1 à 127, 0 n'est pas accepté, choisir un nouvel ID
-     return;
-  }
-  Serial.print("Numéro d'identification de l'empreinte: ");
-  Serial.println(id);
-
-  while (! getFingerprintEnroll() ); //Appelle la fonction de manière répétée jusqu'à ce qu'elle retourne une valeur vraie
-}
 
 uint8_t getFingerprintEnroll() {
 
   int p = -1;
   Serial.print("En attente d'un doigt valide pour s'inscrire en tant que "); Serial.println(id);
+
   while (p != FINGERPRINT_OK) { //tant que le retour de p est différent de FINGERPRINT_OK, redemander la prise d'empreinte
     p = finger.getImage(); //Demande au capteur de prendre une image du doigt appuyé sur la surface et de stocker la réponse dans la variable p
     switch (p) {
@@ -85,10 +74,11 @@ uint8_t getFingerprintEnroll() {
       break;
     }
   }
+  //Succès
 
-  // Succès
 
   p = finger.image2Tz(1); //Demande au capteur de convertir l'image en modèle (un modèle = une empreinte) | (1)pour la première prise d'empreinte
+
   switch (p) {
     case FINGERPRINT_OK:
       Serial.println("Image convertie avec succès");
@@ -113,6 +103,7 @@ uint8_t getFingerprintEnroll() {
   Serial.println("Retirez votre doigt du capteur");
   delay(2000); //Attente de 2000ms
   p = 0; //initialisation de p sur 0
+
   while (p != FINGERPRINT_NOFINGER) { //tant que le retour de p est différent de FINGERPRINT_NOFINGER, reste dans la boucle
     p = finger.getImage(); //Vérifie que le doigt n'est pas posé sur le capteur. Retour attendu : FINGERPRINT_NOFINGER
   }
@@ -120,6 +111,7 @@ uint8_t getFingerprintEnroll() {
   Serial.print("Empreinte n° "); Serial.println(id);
   p = -1;
   Serial.println("Replacer le même doigt sur le capteur");
+
   while (p != FINGERPRINT_OK) { //tant que le retour de p est différent de FINGERPRINT_OK, redemander la prise d'empreinte
     p = finger.getImage(); //prend une image de l'empreinte (2ème fois sur la même empreinte)
     switch (p) {
@@ -140,10 +132,11 @@ uint8_t getFingerprintEnroll() {
       break;
     }
   }
+  //Succès
 
-  // Succès
 
   p = finger.image2Tz(2); //Demande au capteur de convertir l'image en modèle (un modèle = une empreinte) | (2)pour vérification de l'empreinte
+
   switch (p) {
     case FINGERPRINT_OK:
       Serial.println("Image convertie avec succès");
@@ -164,12 +157,12 @@ uint8_t getFingerprintEnroll() {
       Serial.println("Erreur inconnue");
       return p;
   }
+  //Image convertie
 
-  // Image convertie
 
   Serial.print("Création du modèle pour l'empreinte : ");  Serial.println(id);
-
   p = finger.createModel(); //Demande au capteur de prendre les deux modèles pour n'en créer qu'un.
+
   if (p == FINGERPRINT_OK) {
     Serial.println("Impressions assorties !");
   } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
@@ -185,6 +178,7 @@ uint8_t getFingerprintEnroll() {
 
   Serial.print("Empreinte n° : "); Serial.println(id);
   p = finger.storeModel(id); //enregistre le modèle calculé en vue d'une mise en correspondance ultérieure
+  
   if (p == FINGERPRINT_OK) {
     Serial.println("Image de l'empreinte enregistrée avec succès");
   } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
@@ -202,4 +196,19 @@ uint8_t getFingerprintEnroll() {
   }
 
   return true;
+}
+
+
+void loop()
+{
+  Serial.println("Prêt à enregistrer une empreinte");
+  Serial.println("Veuillez saisir le numéro d'identification (de 1 à 127) sous lequel vous souhaitez enregistrer ce doigt...");
+  id = readnumber(); //id prend la valeur saisie dans le flux serial
+  if (id == 0) { //1 à 127, 0 n'est pas accepté, choisir un nouvel ID
+     return;
+  }
+  Serial.print("Numéro d'identification de l'empreinte: ");
+  Serial.println(id);
+
+  while (! getFingerprintEnroll() ); //Appelle la fonction de manière répétée jusqu'à ce qu'elle retourne une valeur vraie
 }
