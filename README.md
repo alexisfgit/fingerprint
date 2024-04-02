@@ -1,4 +1,4 @@
-Solution d'accès à l'aide du capteur d'empreinte digitale AS608.
+#Solution d'accès à l'aide du capteur d'empreinte digitale AS608.
 
 Code source inspiré des exemples de la librairie Adafruit_Fingerprint.
 
