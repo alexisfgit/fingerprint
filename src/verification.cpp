@@ -128,7 +128,7 @@ uint8_t getFingerprintID() {
       //Serial.println("Erreur inconnue, merci de nettoyer le capteur et de réessayer");
       u8x8.clearDisplay();
 
-      u8x8.drawString(2,3,"Erreur inconnue"); 
+      u8x8.drawString(1,3,"Erreur inconnue"); 
       u8x8.drawUTF8(3,4,"Réessayez...");
       return p;
   }
@@ -183,7 +183,7 @@ uint8_t getFingerprintID() {
     //Serial.println("Erreur inconnue");
     u8x8.clearDisplay();
 
-    u8x8.drawString(2,3,"Erreur inconnue");
+    u8x8.drawString(1,3,"Erreur inconnue");
     return p;
   }
 
@@ -204,6 +204,11 @@ uint8_t getFingerprintID() {
 
   delay(2000);
   u8x8.clearDisplay();
+
+  u8x8.drawString(3,2,"Posez votre");
+  u8x8.drawString(4,3,"doigt sur");
+  u8x8.drawString(3,4,"le capteur");
+  u8x8.drawString(4,5,"........");
 
   return finger.fingerID; //Retourne le numéro de l'empreinte trouvée
 }
