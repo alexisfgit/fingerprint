@@ -5,6 +5,7 @@
 #include <Adafruit_Fingerprint.h>
 #include <U8x8lib.h> //choix de cette librairie car prend peu de RAM sur le Uno
 
+const int relay = 10;
 
 SoftwareSerial mySerial(2, 3); //utilisation liaison série sur l'Arduino
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial); //Instancie le capteur avec un flux pour Serial
@@ -13,6 +14,7 @@ U8X8_SSD1306_128X64_NONAME_SW_I2C u8x8(/* clock=*/ A5, /* data=*/ A4, /* reset=*
 
 void setup()
 {
+  pinMode(relay, OUTPUT);
   u8x8.begin(); //Instancie l'affichage sur l'écran
   u8x8.setFont(u8x8_font_pressstart2p_f); //police d'écriture. _f : prend en charge + de caractères
   delay(100); //temps d'initialisation de l'écran
@@ -92,6 +94,7 @@ void setup()
 
 //Fonction permettant la prise d'empreinte et de la comparer à la base de donnée du capteur
 uint8_t getFingerprintID() {
+  digitalWrite(relay, LOW); //fermeture serrure
   uint8_t p = finger.getImage(); //Demande au capteur de prendre une image du doigt appuyé sur la surface et de stocker la réponse dans la variable p
   switch (p) {
     case FINGERPRINT_OK:
@@ -161,6 +164,7 @@ uint8_t getFingerprintID() {
 
     u8x8.drawString(1,3,"Correspondance");
     u8x8.drawUTF8(3,4,"trouvée !");
+    digitalWrite(relay, HIGH); //ouverture serrure
   } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
     //Serial.println("Erreur de communication");
     u8x8.clearDisplay();
